@@ -1,0 +1,122 @@
+
+
+<p>Page 30, first sentence in section titled "Spring's Support for the Service Layer"
+should read: "The Spring Framework does <b>not</b> provide any interfaces or classes
+for implementing the business aspects of the service layer."  Note the addition of the word
+<b>not</b>.</p>
+
+<p>
+Listing 5-40 should be changed to:
+</p>
+
+<pre><code>
+&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE beans PUBLIC
+	"-//SPRING//DTD BEAN//EN"
+	"http://www.springframework.org/dtd/spring-beans.dtd"&gt;
+
+&lt;beans&gt;
+
+	&lt;bean id="multipartResolver"
+		class="org.springframework.web.multipart.CommonsMultipartResolver"&gt;
+		&lt;property name="maxUploadSize" value="2000000" /&gt;
+	&lt;/bean&gt;
+
+	&lt;bean name="/handleUpload"
+		class="com.apress.expertspringmvc.chap4.HandleUploadController"&gt;
+		&lt;property name="destinationDir" value="/tmp" /&gt;
+	&lt;/bean&gt;
+
+&lt;/beans>
+</code></pre>
+
+<p>All occurances of SearchFlights.class should be changes to FlightSearchCriteria.class
+in Chapter 4.</p>
+
+<p>
+Listing 4-16 should be changed to:
+</p>
+
+<pre><code>
+package com.apress.expertspringmvc.flight.web;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.SimpleFormController;
+
+import com.apress.expertspringmvc.flight.domain.FlightSearchCriteria;
+import com.apress.expertspringmvc.flight.service.FlightService;
+
+public class SearchFlightsController extends SimpleFormController {
+
+    private FlightService flights;
+
+    public SearchFlightsController() {
+        setCommandName("flightSearchCriteria");
+        setCommandClass(FlightSearchCriteria.class);
+        setFormView("beginSearch");
+        setSuccessView("listFlights");
+    }
+
+    public void setFlightService(FlightService flights) {
+        this.flights = flights;
+    }
+
+    @Override
+    protected void initBinder(HttpServletRequest req,
+            ServletRequestDataBinder binder) throws Exception {
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(
+                new SimpleDateFormat("yyyy-MM-dd HH"), true));
+    }
+
+    @Override
+    protected ModelAndView onSubmit(Object command) throws Exception {
+        FlightSearchCriteria search = (FlightSearchCriteria) command;
+        ModelAndView mav = new ModelAndView(getSuccessView());
+        mav.addObject("flights", flights.findFlights(search));
+        mav.addObject("flightSearchCriteria", search);
+        return mav;
+    }
+
+}
+</code></pre>
+
+<p>Notice the change from SearchFlights.class to FlightSearchCriteria.class in the constructor.</p>
+<p>Thanks to Hugh Scott for finding this error.</p>
+
+<p>Listing 4-18, line 14 should be changed to:</p>
+
+<pre><code>
+&lt;spring:nestedPath path="flightSearchCriteria"&gt;
+</code></pre>
+
+<p>Notice the change from searchFlights to flightSearchCriteria in the path name.</p>
+
+<p>On page 72, change occurances of SearchFlights to FlightSearchCriteria</p>
+
+<p>On page 68, the text "tag in the JSP in Listing 4-8" (in the setCommandName() bullet) should be changed to Listing 4-18.
+Thanks to Timothy Troy for spotting this.</p>
+
+<p>On Chapter 6, page 139, Listing 6-25:</p>
+
+<code><pre>
+public Date getDate() {
+return dateProperty;
+}
+</pre></code>
+
+<p>has to be</p>
+
+<code><pre>
+public Date getDate() {
+return date;
+}
+</pre></code>
+
+<p>Thanks to Brendan Kim for finding this.</p>
